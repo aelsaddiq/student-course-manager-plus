@@ -111,7 +111,6 @@ admin / admin123
 
 ## Future Improvements
 
-* User registration system
 * Role-based permissions with finer control
 * GPA calculation using a 4.0 scale
 * Deployment to a live server
