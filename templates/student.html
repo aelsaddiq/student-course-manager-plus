@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>Student Dashboard</h1>
+        <p class="muted">View your classes, browse courses, and enroll or drop classes.</p>
+    </div>
+    <div class="stat-box">
+        <span class="stat-label">Average Grade</span>
+        <span class="stat-value">
+            {% if average_grade is not none %}
+                {{ average_grade }}
+            {% else %}
+                Not graded yet
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+<div class="grid two">
+    <section class="card">
+        <h2>My Classes</h2>
+        {% if enrollments %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Teacher</th>
+                        <th>Time</th>
+                        <th>Grade</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enrollment in enrollments %}
+                    <tr>
+                        <td>{{ enrollment.course.name }}</td>
+                        <td>{{ enrollment.course.teacher.full_name }}</td>
+                        <td>{{ enrollment.course.time }}</td>
+                        <td>{% if enrollment.grade is none %}Not graded yet{% else %}{{ enrollment.grade }}{% endif %}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('drop_class', enrollment_id=enrollment.id) }}" onsubmit="return confirm('Are you sure you want to drop this class?');">
+                                <button type="submit" class="danger">Drop</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No classes yet.</p>
+        {% endif %}
+    </section>
+
+    <section class="card">
+        <h2>All Classes Offered</h2>
+
+        <form method="GET" class="filters">
+            <input type="text" name="q" placeholder="Search by course name" value="{{ search_query }}">
+            <select name="teacher">
+                <option value="">All teachers</option>
+                {% for teacher in teacher_names %}
+                    <option value="{{ teacher }}" {% if teacher == teacher_filter %}selected{% endif %}>{{ teacher }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Filter</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Teacher</th>
+                    <th>Time</th>
+                    <th>Capacity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in all_courses %}
+                {% set count = course_counts[course.id] %}
+                {% set spots_left = course.capacity - count %}
+                <tr>
+                    <td>{{ course.name }}</td>
+                    <td>{{ course.teacher.full_name }}</td>
+                    <td>{{ course.time }}</td>
+                    <td>{{ count }} / {{ course.capacity }} {% if spots_left > 0 %}<span class="muted">({{ spots_left }} spots left)</span>{% endif %}</td>
+                    <td>
+                        {% if course.id in enrolled_course_ids %}
+                            <span class="pill">Enrolled</span>
+                        {% elif count >= course.capacity %}
+                            <span class="pill gray">Full</span>
+                        {% else %}
+                            <form method="POST" action="{{ url_for('enroll', course_id=course.id) }}" onsubmit="return confirm('Add this class?');">
+                                <button type="submit">Add</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% endblock %}

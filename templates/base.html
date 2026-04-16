@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{ session.get('theme', 'light') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Course Manager{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="{{ url_for('dashboard') }}" class="brand">Student Course Manager</a>
+        </div>
+        <div class="nav-right">
+            {% if current_user %}
+                <span class="welcome">Welcome, {{ current_user.full_name }}</span>
+                <span class="role-badge">{{ current_user.role.title() }}</span>
+                {% if current_user.role == 'admin' %}
+                    <a href="/admin/" class="nav-link">Admin</a>
+                {% endif %}
+                <a href="{{ url_for('toggle_theme') }}" class="nav-link">Toggle Theme</a>
+                <a href="{{ url_for('logout') }}" class="nav-link danger-link">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="page">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-wrap">
+                    {% for message in messages %}
+                        <div class="flash">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ course.name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>{{ course.name }}</h1>
+        <p class="muted">{{ course.time }} • {{ course.teacher.full_name }}</p>
+    </div>
+    <a class="button-link" href="{{ url_for('teacher_dashboard') }}">Back</a>
+</div>
+
+<section class="card">
+    <h2>Roster</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Current Grade</th>
+                <th>Update Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for enrollment in enrollments %}
+            <tr>
+                <td>{{ enrollment.student.full_name }}</td>
+                <td>{% if enrollment.grade is none %}Not graded yet{% else %}{{ enrollment.grade }}{% endif %}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('update_grade', enrollment_id=enrollment.id) }}" class="inline-form">
+                        <input type="text" name="grade" value="{{ '' if enrollment.grade is none else enrollment.grade }}" placeholder="Enter grade">
+                        <button type="submit" onclick="return confirm('Save this grade change?');">Save</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

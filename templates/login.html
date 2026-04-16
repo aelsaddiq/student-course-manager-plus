@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="card narrow">
+    <h1>Login</h1>
+    <p class="muted">Sign in as a student, teacher, or admin.</p>
+
+    <form method="POST" class="stack">
+        <label>Username</label>
+        <input type="text" name="username" required>
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <div class="demo-box">
+        <h3>Demo Accounts</h3>
+        <p><strong>Student:</strong> aditya.ranganath / student123</p>
+        <p><strong>Teacher:</strong> ammon.hepworth / teacher123</p>
+        <p><strong>Admin:</strong> admin / admin123</p>
+    </div>
+</div>
+{% endblock %}
